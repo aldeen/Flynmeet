@@ -1,3 +1,7 @@
+/**
+* search_controller module
+* @namespace flynmeet.search_controller
+*/
 (function () {
   'use strict';
 

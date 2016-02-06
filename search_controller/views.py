@@ -1,3 +1,10 @@
+'''
+views.py
+Created on Feb 2, 2016
+
+@author: aldeen berluti
+Views for the model MVC, here being the direct API end point 
+'''
 from django.shortcuts import render
 from serializers import SearchSerializer
 from rest_framework.response import Response

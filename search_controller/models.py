@@ -1,3 +1,10 @@
+'''
+models.py
+Created on Feb 2, 2016
+
+@author: aldeen berluti
+Model class and funtions handling the different ressources and business operations
+'''
 from __future__ import unicode_literals
 from django.db import models
 from skyscanner import FlightsCache
@@ -8,6 +15,7 @@ KEY_API = get_api_key ()
 
 # Create your models here.
 class Currency (models.Model):
+    """ Describe the different currencies that are going to be managed and their attributes"""
     code = models.CharField('Currency code', max_length=3, primary_key=True)
     symbol = models.CharField('Currency symbol', max_length=5)
     exchange_rate = models.FloatField('Exchange rate') 
@@ -33,11 +41,11 @@ class Search (Route):
     #locale =
     
     def get_search_result (self):
-        """
-        Returns results of the browse search by calling Skyscanner API
-        """
+        """ Returns results of the browse search by calling the Airfare API """
         print self.departure_date.strftime("%Y/%m/%d")
-        # This below will have to be set according to the cookies
+        # These below will have to be set according to the cookies, 
+        # but so far, they are hardcoded for feature testing purpose
+        #TODO
         self.market = 'GB'
         self.currency ='SGD'
         self.locale = 'GB-en'

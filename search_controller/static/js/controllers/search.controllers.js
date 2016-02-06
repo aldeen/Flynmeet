@@ -1,6 +1,6 @@
 /**
-* Search controller
-* @namespace Flynmeet.search_controller.controllers
+* search_controller controller
+* @namespace flynmeet.search_controller.controllers
 */
 (function () {
     'use strict';
@@ -23,25 +23,20 @@
         /**
         * @name initialize
         * @desc Actions to be performed when this controller is instantiated
-        * @memberOf Flynmeet.search_controller.controllers.SearchController
+        * @memberOf flynmeet.search_controller.controllers.SearchController
         */
         function initialize() {
         // Set the departure_date at today's date
             $scope.departure_date = new Date();
-        // Set client's origin departure according to location
-        //    if (Authentication.isAuthenticated()) {
-        //        $location.url('/');   
-        //    }
         }
   
       
         /**
-        * @name login
-        * @desc log a user in
-        * @memberOf thinkster.authentication.controllers.LoginController
+        * @name search
+        * @desc Send a request to get the cheapesst destination at the given dates
+        * @memberOf flynmeet.search_controller.controllers.SearchController
         */
         function search() {
-            // TO BE FILLED PROPERLY AND DYNAMICALLY
             SearchFares.CheapestDests($scope.origin, $scope.departure_date, $scope.return_date);
         }
     }

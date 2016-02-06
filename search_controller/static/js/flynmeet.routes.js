@@ -1,3 +1,8 @@
+/**
+* Routes
+* @namespace flynmeet.routes
+*/
+
 (function () {
     'use strict';
 

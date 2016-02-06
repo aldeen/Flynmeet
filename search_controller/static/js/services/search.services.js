@@ -12,12 +12,12 @@
     SearchFares.$inject = ['$cookies', '$http'];
 
     /**
-    * @namespace Authentication
+    * @namespace SearchFares
     * @returns {Factory}
     */
     function SearchFares($cookies, $http) {
         /**
-        * @name Authentication
+        * @name SearchFares
         * @desc The Factory to be returned
         */
         var SearchFares = {
@@ -37,7 +37,7 @@
         * @param {date} departure_date The date of the departure entered by the user
         * @param {date} return_date The date of the return flight entered by the user
         * @returns {Promise}
-        * @memberOf flynmeet.search_controller.services.Search
+        * @memberOf flynmeet.search_controller.services.SearchFares
         */
         function CheapestDests(origin, departure_date, return_date) {
             return $http.post('/api/v1/CheapestDests/', {
@@ -51,7 +51,6 @@
             * @desc Display the results
             */
             function CheapestDestsSuccessFn (data, status, headers, config) {
-                //Authentication.login(email, password);
             }
 
             /**
