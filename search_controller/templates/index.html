@@ -1,0 +1,68 @@
+{% load staticfiles %}
+<html lang="En" ng-app="Flynmeet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.4/angular-material.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Flyn'meet Beta</a>
+                <img alt="Flynmeet" src="https://s3-ap-southeast-1.amazonaws.com/flynmeetsbucket/Images/Brand/logo-50x50.png">
+            </div>
+            <div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="row">
+        
+        <div class="col-md-4 col-md-offset-4">
+            <h2>Find the cheapest destination</h2>
+            <div class="well">
+                <form role="form" ng-submit="search()" ng-controller="SearchController">
+                    <div class="form-group">
+                        <label for="search__origin">Departure</label>
+                        <input type="text" class="form-control" id="search__origin" ng-model="origin" placeholder="Singapore" />
+                    </div>
+                    <div class="form-group">
+                        <label for="login__departure_date">Departure Date</label>
+                        <md-datepicker  class="form-control" id="login__departure_date" ng-model="departure_date" required></md-datepicker>
+                    </div>
+                    <div class="form-group">
+                        <label for="login__return_date">Return Date</label>
+                        <md-datepicker class="form-control" id="login__return_date" ng-model="return_date" required></md-datepicker>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% block extra_content %}
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-cookies.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/flynmeet.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/flynmeet.config.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/flynmeet.routes.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/search_controller.module.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/services/search.services.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/controllers/search.controllers.js' %}"></script>
+{% endblock %}
+</html>

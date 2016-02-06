@@ -1,0 +1,7 @@
+#login__return_date{
+    height:inherit;
+}
+#login__departure_date{
+    height:inherit;
+}
+#datepicker > span:hover{cursor: pointer;}
