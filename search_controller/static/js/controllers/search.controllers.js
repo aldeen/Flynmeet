@@ -17,27 +17,79 @@
     function SearchController($location, $scope, SearchFares) {
 
         $scope.search = search;
+        $scope.addRoute = addRoute;
+        $scope.delRoute = delRoute;
 
+        $scope.range = function(number) {
+            return new Array(number);
+        }
+        
         initialize();
 
         /**
         * @name initialize
         * @desc Actions to be performed when this controller is instantiated
-        * @memberOf flynmeet.search_controller.controllers.SearchController
+        * @memberOf flynmeet. search_controller.controllers.SearchController
         */
         function initialize() {
-        // Set the departure_date at today's date
-            $scope.departure_date = new Date();
+            $scope.routes = {}
+            var route_format = {origin:'SG', departure_date: new Date(), return_date: new Date()};
+            $scope.routes['0'] = route_format ;
+            $scope.route_count = 1;
         }
-  
-      
+        
+        
         /**
         * @name search
         * @desc Send a request to get the cheapesst destination at the given dates
         * @memberOf flynmeet.search_controller.controllers.SearchController
         */
         function search() {
-            SearchFares.CheapestDests($scope.origin, $scope.departure_date, $scope.return_date);
+            var search_param = new Array();
+            var validity_flag = true;
+            var log = [];
+            var log2 = [];
+            angular.foreach ($scope.routes, function(value,index){
+                validity_flag = true;
+                angular.foreach (value, function(val, key) {
+                    if (!val || val == null || val =="") {
+                        validity_flag = validity_flag && false;
+                    }
+                    else if (key =='return_date' || key=='departure_date') {
+                        validity_flag = validity_flag && angular.isDate(val);
+                    }
+                }, log2);
+                if (validity_flag === true) {
+                    search_param.push(route_nb + ': ' + item);
+                }
+            }, log);
+            SearchFares.CheapestDests(search_param);
         }
+        
+        
+        
+        /**
+        * @name addRoute
+        * @desc Add entries to the form so fares for this new route can be fetched. RouteFormInputs
+        * requires a model (ref to ng-model) that here is the sting 'routes'
+        * @memberOf flynmeet.search_controller.controllers.SearchController
+        */
+        function addRoute() {
+            var route_format = {origin:'SG', departure_date: new Date(), return_date: new Date()};
+            $scope.routes[$scope.route_count] = route_format ;
+            $scope.route_count ++;
+        }
+        
+        /**
+        * @name delRoute
+        * @desc del entries to the form for the last route added 
+        * @memberOf flynmeet.search_controller.controllers.SearchController
+        */
+        
+        function delRoute() {
+            $scope.route_count --;
+            delete $scope.routes[$scope.route_count];
+        }
+        
     }
 })();

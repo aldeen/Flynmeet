@@ -1,6 +1,6 @@
 # Flynmeet
 ## Description ##
-It is supposed to become a advanced flightsearch for people wanted to meet around the world and willing to find the cheapest fare. It is based on airfare API such as Skyscanner initially which seems to meet our needs, but this will depends on the time we can have access to the API. Let's see how it goes, in anycase we can adapt ;).
+It is supposed to become a advanced flightsearch for people wanting to meet around the world and willing to find the cheapest fare. It is based on airfare API such as Skyscanner initially which seems to meet our needs, but this will depend on how long we can have access to the API. Let's see how it goes, in anycase we can adapt ;).
 
 ## Technical architecture ##
 The choice has been made to developp the back-end in python with DJANGO:
@@ -9,7 +9,7 @@ The choice has been made to developp the back-end in python with DJANGO:
  - Business logic
 
 
-The front-end will be treating the information requested by the user and the technical choice has been made on jsAngular for his flexibility, capacity to make a nice UI and supported by Google makes it more reliable for the futur.
+The front-end will be treating the information requested by the user and the technical choice has been made on jsAngular for its flexibility, capacity to make a nice UI and supported by Google makes it more reliable for the futur.
 
 Both Back-end and Front-end will be communicating through REST API and Django REST Framework will be used. 
 ## Applications ##
@@ -26,10 +26,7 @@ Front-end
 * #TODO Get existing cities/Airports of every countries
 
 
-Business Logic:
-Business Operations:
-
-## TBD ##
+## Business operations TBD ##
 SearchFare:
 GET /search Return Fares according to items passed
 	
