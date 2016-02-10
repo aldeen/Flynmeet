@@ -46,24 +46,33 @@
         */
         function search() {
             var search_param = new Array();
+            // to replace with the client currency and locale
+            search_param.currency = 'SGD';
+            search_param.locale = 'SG-sg';
+            search_param.routes = {};
             var validity_flag = true;
             var log = [];
-            var log2 = [];
-            angular.foreach ($scope.routes, function(value,index){
-                validity_flag = true;
-                angular.foreach (value, function(val, key) {
-                    if (!val || val == null || val =="") {
-                        validity_flag = validity_flag && false;
+            console.log($scope.routes.length)
+            if ($scope.routes) {
+               for (var i = 0; i <= Object.keys($scope.routes).length; i++) {
+                    validity_flag = true;
+                    angular.forEach($scope.routes[i], function(val,key){
+                        if (!val || val == null || val =="") {
+                            validity_flag = validity_flag && false;
+                        }
+                        else if (key =='return_date' || key=='departure_date') {
+                            validity_flag = validity_flag && angular.isDate(val);
+                        }
+                    }, log);
+                    if (validity_flag === true) {
+                        search_param.routes[i] = $scope.routes[i];
                     }
-                    else if (key =='return_date' || key=='departure_date') {
-                        validity_flag = validity_flag && angular.isDate(val);
-                    }
-                }, log2);
-                if (validity_flag === true) {
-                    search_param.push(route_nb + ': ' + item);
                 }
-            }, log);
-            SearchFares.CheapestDests(search_param);
+                SearchFares.CheapestDests(search_param);
+            }
+            else {
+                $scope.errmsg = 'All fields need to filled';
+            }
         }
         
         
