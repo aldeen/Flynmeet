@@ -1,0 +1,176 @@
+#Skyscanner browse cache return data under that type:
+
+# Json Tree {
+    key "Quotes" = array of Quote [{
+        key "QuoteID" = string
+        key "MinPrice = string
+        key "Direct" = string
+        key "OutboundLeg" = object
+            key "CarrierIds" = array of integer ([2034])
+			key "OriginId": integer,
+			key "DestinationId": integer,
+			key "DepartureDate": string ("YYYY-MM-DDTHH:MM:SS")
+        key "InboundLeg": object
+            key "CarrierIds" = array of integer ([2034])
+			key "OriginId": integer,
+			key "DestinationId": integer,
+			key "DepartureDate": string ("YYYY-MM-DDTHH:MM:SS")
+        key "QuoteDateTime": string ("YYYY-MM-DDTHH:MM:SS")
+        },
+    ]
+    
+    key "Places" = array of Place [{
+        key "PlaceId": integer,
+        OPTIONAL key "IataCode": string,
+		key "Name": string,
+		key "Type": string,
+        OPTIONAL "CityName": string,
+		OPTIONAL "CityId": string,
+		OPTIONAL "CountryName": string
+        },
+    ]
+    
+    key "Carriers" = array of Carrier [{
+        key "CarrierId": integer,
+		key "Name": string
+        },
+    ]
+    key "Currencies" = array of Currency [{
+		key "Code": string,
+		key "Symbol": string,
+		key "ThousandsSeparator": string,
+		key "DecimalSeparator": string,
+		key "SymbolOnLeft": Boolean,
+		key "SpaceBetweenAmountAndSymbol": Boolean,
+		key "RoundingCoefficient": integer,
+		key "DecimalDigits": integer
+        },
+    ]
+
+
+
+
+
+# Example
+{
+	"Quotes": [{
+		"QuoteId": 1,
+		"MinPrice": 163.0,
+		"Direct": true,
+		"OutboundLeg": {
+			"CarrierIds": [2034],
+			"OriginId": 67662,
+			"DestinationId": 59070,
+			"DepartureDate": "2016-02-15T00:00:00"
+		},
+		"InboundLeg": {
+			"CarrierIds": [2034],
+			"OriginId": 59070,
+			"DestinationId": 67662,
+			"DepartureDate": "2016-02-18T00:00:00"
+		},
+		"QuoteDateTime": "2016-02-11T19:35:00"
+	}, {
+		"QuoteId": 2,
+		"MinPrice": 651.0,
+		"Direct": false,
+		"OutboundLeg": {
+			"CarrierIds": [1035],
+			"OriginId": 65698,
+			"DestinationId": 74770,
+			"DepartureDate": "2016-02-15T00:00:00"
+		},
+		"InboundLeg": {
+			"CarrierIds": [1035],
+			"OriginId": 74770,
+			"DestinationId": 65698,
+			"DepartureDate": "2016-02-18T00:00:00"
+		},
+		"QuoteDateTime": "2016-02-08T05:23:00"
+	}, 
+    .
+    .
+    .
+    .
+    .
+    .
+    {
+		"QuoteId": 52,
+		"MinPrice": 518.0,
+		"Direct": false,
+		"OutboundLeg": {
+			"CarrierIds": [1044],
+			"OriginId": 65698,
+			"DestinationId": 61362,
+			"DepartureDate": "2016-02-15T00:00:00"
+		},
+		"InboundLeg": {
+			"CarrierIds": [1044],
+			"OriginId": 61362,
+			"DestinationId": 65698,
+			"DepartureDate": "2016-02-18T00:00:00"
+		},
+		"QuoteDateTime": "2016-02-12T10:53:00"
+	}],
+    
+	"Places": [{
+		"PlaceId": 837,
+		"Name": "United Arab Emirates",
+		"Type": "Country"
+	}, {
+		"PlaceId": 838,
+		"Name": "Afghanistan",
+		"Type": "Country"
+	}, 
+    .
+    .
+    .
+    .
+    .
+    {
+		"PlaceId": 2055,
+		"Name": "Zimbabwe",
+		"Type": "Country"
+	}, {
+		"PlaceId": 42563,
+		"IataCode": "BFS",
+		"Name": "Belfast International",
+		"Type": "Station",
+		"CityName": "Belfast",
+		"CityId": "BELF",
+		"CountryName": "United Kingdom"
+	}, {
+		"PlaceId": 42644,
+		"IataCode": "BHD",
+		"Name": "Belfast City",
+		"Type": "Station",
+		"CityName": "Belfast",
+		"CityId": "BELF",
+		"CountryName": "United Kingdom"
+	}],
+	"Carriers": [{
+		"CarrierId": 105,
+		"Name": "Thomas Cook Airlines"
+	}, {
+		"CarrierId": 288,
+		"Name": "Etihad Airways"
+	},
+    .
+    .
+    .
+    .
+    .{
+		"CarrierId": 2034,
+		"Name": "Monarch"
+	}],
+	"Currencies": [{
+		"Code": "GBP",
+		"Symbol": "£",
+		"ThousandsSeparator": ",",
+		"DecimalSeparator": ".",
+		"SymbolOnLeft": true,
+		"SpaceBetweenAmountAndSymbol": false,
+		"RoundingCoefficient": 0,
+		"DecimalDigits": 2
+	}]
+}

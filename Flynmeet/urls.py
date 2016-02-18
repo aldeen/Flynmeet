@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from Flynmeet.views import SearchPage, IndexPage
-from search_controller.views import SearchView
+from Flynmeet.views import SearchPage, IndexPage , ResultsPage, home
+from search_controller.views import SearchView, OriginEntriesView 
 from rest_framework import routers
 
 
@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     #api end point
     url(r'^api/v1/CheapestDests/$', SearchView),
+    url(r'^api/v1/GetOriginEntries/$', OriginEntriesView),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url('^index.*$', SearchPage.as_view(), name='search'),
-    url('^.*$', IndexPage.as_view(), name='index'),
+    url('^.*$', home, name='index'),
 ]
