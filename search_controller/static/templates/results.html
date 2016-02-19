@@ -10,8 +10,9 @@
                             </tr>
                             <tbody  ng-repeat="(key,value) in results.quotes | orderBy:'total_price'">
                                 <tr>
-                                    <td >{{(getObjFromRef(results.places, "PlaceId", value['DestinationId'], 'CountryName')) }}</td>
+                                    <td >{{(getObjFromRef(value['places'], "PlaceId", value['DestinationId'], 'CountryName')) }}</td>
                                     <td ng-repeat="(index, quote) in value['dest_quotes']"> {{quote.MinPrice | currency }}</td>
+                                    <td >{{value['total_price']}}</td>
                                 </tr>
                             </tbody>
                         </table>

@@ -161,9 +161,6 @@
             $scope.results = SortFares.get_sorted_results();
         }
         
-        
-        
-        
     }
     
     /**
@@ -182,7 +179,6 @@
                 });
             }
         }
-        return newfilter;
-    }
-    
+        return newfilter; 
+     }
 })();
