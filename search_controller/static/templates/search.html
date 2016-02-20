@@ -22,18 +22,18 @@
         <h4>Route {{$index + 1}} </h4>
         <div class="form-group">
             <label for="search__origin">Departure</label>
-            <input type="text" class="form-control" id="search__origin" ng-model="routes[$index].origin" uib-typeahead="place.name for place in places" />
+            <input type="text" class="form-control" id="search__origin" ng-model="search_routes[$index].origin" uib-typeahead="place.name for place in places" />
             </div>
 </div>
         </div>
 
         <div class="form-group">
             <label for="login__departure_date">Departure Date</label>
-            <md-datepicker  class="form-control" id="login__departure_date" ng-model="routes[$index].departure_date" required></md-datepicker>
+            <md-datepicker  class="form-control" id="login__departure_date" ng-model="search_routes[$index].departure_date" required></md-datepicker>
         </div>
         <div class="form-group">
             <label for="login__return_date">Return Date</label>
-            <md-datepicker class="form-control" id="login__return_date" ng-model="routes[$index].return_date" required></md-datepicker>
+            <md-datepicker class="form-control" id="login__return_date" ng-model="search_routes[$index].return_date" required></md-datepicker>
         </div>
     </script>
     
