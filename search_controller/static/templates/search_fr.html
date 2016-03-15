@@ -1,0 +1,39 @@
+        <div ng-cloak class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <h2 class="text-center">Trouvez la destination commune la moins chère</h2>
+            </div>
+            <div class="col-md-4 col-md-offset-4">
+                <div class="well">
+                    <form role="form" ng-submit="search()" ng-controller="SearchController" >
+                        <div ng-repeat="quotes in range(route_count) track by $index">
+                            <div ng-include="'route_inputs.html'"></div>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" ng-hide="route_count > 4" ng-click='addRoute()' class="btn btn-primary">Ajouter une route</button>
+                            <button type="button" ng-show="route_count > 1" ng-click='delRoute()' class="btn btn-primary">Supprimer une route</button>
+                            <button type="submit" class="btn btn-primary">Lancer la recherche</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    
+<script type="text/ng-template" id="route_inputs.html">
+        <h4>Route {{$index + 1}} </h4>
+        <div class="form-group">
+            <label for="search__origin">Départ</label>
+            <input type="text" class="form-control" id="search__origin" ng-model="search_routes[$index].origin" uib-typeahead="place.name for place in places" />
+            </div>
+</div>
+        </div>
+
+        <div class="form-group">
+            <label for="login__departure_date">Date de départ</label>
+            <md-datepicker  class="form-control" id="login__departure_date" ng-model="search_routes[$index].departure_date" required></md-datepicker>
+        </div>
+        <div class="form-group">
+            <label for="login__return_date">Date de retour</label>
+            <md-datepicker class="form-control" id="login__return_date" ng-model="search_routes[$index].return_date" required></md-datepicker>
+        </div>
+    </script>
+    

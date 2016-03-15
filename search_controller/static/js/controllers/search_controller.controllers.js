@@ -1,4 +1,31 @@
 /**
+# CONTROLLERS
+Searchcontroller
+
+## Variables:
+
+scope.search_routes 
+Contain the different routes entered by the user for the search
+the search_routes structure is the following is a object containing different routes with an index as id:
+object route = {'origin': string, 'departure_date': datetime, 'return_date': date}
+search_route = { 0: object route, 1: object route, ...., n: object route}
+
+
+Rescontroller
+
+## Variables
+scope.search_results
+Contain the quotes corresponding to the search of every routes and sorted by destinations
+Each object in search results has the following structure:
+object res: {'destinationID': integer, 'quotes': {0: object quote, 1: object quote, ..., n: object quote}, 'total_price': integer, 'absence_flag'}
+
+'Absence_flag is a boolean telling if in that result structure, for a same destination, one of the route has no quote. In that case the destination must be invalidated
+For object quote, see directly skyscanner. Each quote contains all the quotes + places + carriers + currency
+
+##
+
+
+/**
 * search_controller controller
 * @namespace flynmeet.search_controller.controllers
 */
@@ -9,12 +36,12 @@
         .module('flynmeet.search_controller.controllers')
         .controller('SearchController', SearchController);
 
-    SearchController.$inject = ['$location', '$scope', 'SearchFares'];
+    SearchController.$inject = ['$location', '$scope', 'SearchFares', '$cookies'];
 
     /**
     * @namespace SearchController
     */
-    function SearchController($location, $scope, SearchFares) {
+    function SearchController($location, $scope, SearchFares, $cookies) {
 
         $scope.search = search;
         $scope.addRoute = addRoute;
@@ -37,11 +64,11 @@
         * @memberOf flynmeet. search_controller.controllers.SearchController
         */
         function initialize() {
-            $scope.routes = {}
+            $scope.search_routes = {}
             var route_format = {origin:'SG', departure_date: new Date(), return_date: new Date()};
-            $scope.routes['0'] = route_format ;
+            $scope.search_routes['0'] = route_format ;
             $scope.route_count = 1;
-            //SearchFares.GetOrigins($scope.routes['0'].origin);
+            //SearchFares.GetOrigins($scope.search_routes['0'].origin);
 
         }
         
@@ -54,16 +81,18 @@
         function search() {
             var search_param = {};
             // to replace with the client currency and locale
-            search_param.currency = 'SGD';
-            search_param.locale = 'sg-SG';
-            search_param.market = 'SG'
+            if ($cookies.get('context.currency') &&  $cookies.get('context.locale') && $cookies.get('context.country')) {
+                search_param.currency = $cookies.getObject('context.currency')['Code'];
+                search_param.locale = $cookies.getObject('context.locale')['code'];
+                search_param.market = $cookies.getObject('context.country')['Code'];
+            }
             search_param.routes = [];
             var validity_flag = true;
             var log = [];
-            if ($scope.routes) {
-               for (var i = 0; i < Object.keys($scope.routes).length; i++) {
+            if ($scope.search_routes) {
+               for (var i = 0; i < Object.keys($scope.search_routes).length; i++) {
                     validity_flag = true;
-                    angular.forEach($scope.routes[i], function(val,key){
+                    angular.forEach($scope.search_routes[i], function(val,key){
                         if (!val || val == null || val =="") {
                             validity_flag = validity_flag && false;
                         }
@@ -72,7 +101,7 @@
                         }
                     }, log);
                     if (validity_flag === true) {
-                        search_param.routes[i] = $scope.routes[i];
+                        search_param.routes[i] = $scope.search_routes[i];
                     }
                 }
                 $scope.search_res = SearchFares.CheapestDests(search_param);       
@@ -92,7 +121,7 @@
         */
         function addRoute() {
             var route_format = {origin:'SG', departure_date: new Date(), return_date: new Date()};
-            $scope.routes[$scope.route_count] = route_format ;
+            $scope.search_routes[$scope.route_count] = route_format ;
             $scope.route_count ++;
         }
         
@@ -104,7 +133,7 @@
         
         function delRoute() {
             $scope.route_count --;
-            delete $scope.routes[$scope.route_count];
+            delete $scope.search_routes[$scope.route_count];
         }
         
     }
@@ -122,16 +151,17 @@
     angular
         .module('flynmeet.search_controller.controllers')
         .controller('ResController', ResController)
-        .filter ('FilterObjByContaining', FilterObjByContaining);
-
-    ResController.$inject = ['$location', '$scope', 'SearchFares', 'SortFares'];
-    FilterObjByContaining.$inject =['$filter'];
+    
+    ResController.$inject = ['$location', '$scope', 'SearchFares', '$filter', '$cookies'];
     /**
     * @namespace ResController
     */
-    function ResController($location, $scope, SearchFares, SortFares) {
-
-        $scope.displayResults = displayResults;
+    function ResController($location, $scope, SearchFares, $filter, $cookies) {
+        
+        $scope.currency = $cookies.getObject('context.currency');
+        $scope.locale = $cookies.getObject('context.locale');
+        $scope.country = $cookies.getObject('context.country');
+        $scope.search_results = {};
         $scope.priority = {'mode':'allroutes'};
         
         $scope.getObjFromRef = function (array, key, value, return_field) {
@@ -145,7 +175,7 @@
         }
         
         initialize();
-
+        
         /**
         * @name initialize
         * @desc Actions to be performed when this controller is instantiated
@@ -157,28 +187,290 @@
         
         
         function displayResults () {
-            SortFares.SortResults ($scope.priority);
-            $scope.results = SortFares.get_sorted_results();
+            var results = SearchFares.get_search_results(); 
+            SortResults($scope.priority, results);
         }
         
-    }
+        /**
+        * @name SortResults
+        * @desc Process and compare the results to return an array of routes according to
+        * the mode of priority that has been set
+        * @param priority Set the priority type for sorting ('allroutes', 'Route')
+        * @memberOf flynmeet.search_controller.controllers.Searchcontroller
+        */
+        function SortResults(priority, res) {
+            if (priority['mode']) {
+                if (priority['mode'] == 'allroutes') {
+                    // Process with sorting with a common cheapest destination
+                    var obj = [];
+                    if (Object.keys(res).length == 1) {
+                        for (var i = 0; i < Object.keys(res[0].Quotes).length; i++) {
+                            obj[i] = formatThatForMe (i, res);
+                        }    
+                    } else {
+                        obj = AdvancedSorting(0, new Array(), res );       
+                    }
+                    console.log(obj);
+                    $scope.search_results = obj;
+                }
+                else if (priority['mode'] == 'route') {}
+                    // check priority number
+                    // then process accordingly
+            }
+        }
+        
+
+        /**
+        * @name AdvancedSorting
+        * @desc Recursive function sorting the different quotes for each destination, 
+        * from the cheapest to the more expensive
+        * @param index is the cursor position in the reference table/object
+        * @param new_obj is the object that is create in each function iteration then 
+        * transfered to the next     iteration
+        * @param ref_obj is the reference table/object
+        * @memberOf flynmeet.search_controller.controllers.Searchcontroller
+        */
+        function AdvancedSorting (index, new_obj, ref_obj) {
+            var obj = [];
+            // Checking whether the end is reached
+            if (index >= ref_obj[0]['Quotes'].length) {
+                return new_obj;
+            }
+            // Make sure that the results is not empty
+            if (ref_obj[0]['Quotes'] == '[]') {
+                //TODO raise exception -> no results + user page
+                return false;
+            }
+            // if it is the first object that we are comparing
+            // then we put the first object of ref_obj in the new object
+            if (Object.keys(new_obj).length == 0) {
+                // get all the quotes for all routes for this destination as an obj
+                new_obj[index] = formatThatForMe(index,ref_obj) ;
+                index = index +1;
+            }
+            // then we are sorting with new ref item. If smaller, before, higher, after
+            for (var i = 0; i < Object.keys(new_obj).length; i++) {
+                var struct = formatThatForMe (index, ref_obj) ;
+                if (struct.total_price <= new_obj[i].total_price) {
+                // case were item in ref is smaller than actual -> insert
+                    for (var j = i; j < Object.keys(new_obj).length; j++) {
+                        // shift all the items of 1 offset
+                        obj[j+1] = new_obj[j];    
+                    }
+                // insert the object in between
+                    obj[i] = struct;
+                    break;
+                } else if (i == Object.keys(new_obj).length-1) {
+                // if we are at the end of the table, insert the item
+                    obj[i+1] = struct;
+                }
+                //  we keep copying the actual into the new
+                obj[i]= new_obj[i];
+            }
+            $scope.search_results = obj;
+            return AdvancedSorting(index+1, obj, ref_obj);   
+        };
+        
+        /**
+        *  formatThatForMe
+        * 
+        */
+        function formatThatForMe (index, ref_obj) {
+            // we expect to receive input of quotes as the following
+            // {'0': {'quotes': [{quoteId,minPrice,...}, {quoteId,minPrice,...}, {quoteId,minPrice,...} ], 'places': [{..}, {..}]},
+            // {'1': {'quotes': [{quoteId,minPrice,...}, {quoteId,minPrice,...}, {quoteId,minPrice,...} ], 'places': [{..}, {..}]},,
+            // {'2': {'quotes': [{quoteId,minPrice,...}, {quoteId,minPrice,...}, {quoteId,minPrice,...} ], 'places': [{..}, {..}]},
+            // }
+            if (Object.keys(ref_obj[0].Quotes) != 0) {
+                var destination_id = ref_obj[0]['Quotes'][index].OutboundLeg.DestinationId;
+                var new_obj = {}
+                new_obj['DestinationId'] = destination_id
+                new_obj['dest_quotes'] = { '0': ref_obj[0]['Quotes'][index]};
+                new_obj['total_price'] = ref_obj[0]['Quotes'][index].MinPrice;
+                new_obj['places'] = ref_obj[0]['Places'];
+                new_obj['absence_flag'] = false;
+                for (var i = 1; i < Object.keys(ref_obj).length; i++) {
+                    var quote = filterObjByContaining (ref_obj[i]['Quotes'],'OutboundLeg', 'DestinationId', destination_id);
+                    if (!quote) {
+                        new_obj['dest_quotes'][i] = null;
+                        new_obj['absence_flag'] = true;
+                    } else {
+                        new_obj['dest_quotes'][i] = quote[0];
+                        new_obj['places'][i] = ref_obj[i]['Places']
+                        new_obj['total_price'] += quote[0].MinPrice;
+                    }
+                }
+                return new_obj;
+            } else {return false;}
+        };
     
-    /**
-    * @name FilterObjByContaining
-    * @desc Look for a matching value of a given field inside an array of item
-    * and return the specific item
-    * @memberOf flynmeet. search_controller.controllers.FilterObjByContaining
-    */
-    function FilterObjByContaining ($filter) {
-        var newfilter = function (objtofilter, fieldfilter, value) {
+        /**
+        * @name FilterObjByContaining
+        * @desc Look for a matching value of a given field inside an array of item
+        * and return the specific item
+        * @memberOf flynmeet. search_controller.controllers.FilterObjByContaining
+        */
+
+        function filterObjByContaining  (objtofilter, fieldfilter, subfieldfilter, value) {
             if (objtofilter) {
                 return $filter('filter')(objtofilter, function(item){
                     if (item[fieldfilter] == value) {
                         return item;
                     }
-                });
+                    if (subfieldfilter) {
+                        if (item[fieldfilter][subfieldfilter] == value) {
+                            return item;
+                        }
+                    }
+                })
             }
+        }        
+    }// end Rescontroller function
+})();
+
+
+
+
+/**
+* search_controller controller
+* @namespace flynmeet.search_controller.controllers
+*/
+(function () {
+    'use strict';
+
+    angular
+        .module('flynmeet.search_controller.controllers')
+        .controller('ContextController', ContextController)
+    
+    ContextController.$inject = ['$location', '$scope', '$modal', '$log', 'ContextSetter', '$cookies'];
+    
+    
+    /**
+    * @namespace ContextController
+    */
+    function ContextController($location, $scope, $modal, $log, ContextSetter, $cookies) {
+        
+       ContextSetter.GetContext();
+        
+        if ($cookies.get('context.currency') &&  $cookies.get('context.locale') && $cookies.get('context.country')) {
+            $scope.currency = $cookies.getObject('context.currency');
+            $scope.country = $cookies.getObject('context.country');
+            $scope.locale = $cookies.getObject('context.locale');
         }
-        return newfilter; 
-     }
+        
+        $scope.open = function(size) {
+            var modalInstance = $modal.open({
+                animation: true,
+                templateUrl: 'context_box.html',
+                controller: 'ContextBoxInstanceCtrl',
+                size: size,
+            });
+            modalInstance.result.then(function() {
+                ContextSetter.GetContext();
+                $scope.currency = $cookies.getObject('context.currency');
+                $scope.country = $cookies.getObject('context.country');
+                if (!angular.equals($scope.locale, $cookies.getObject('context.locale'))) {
+                    $scope.locale = $cookies.getObject('context.locale');
+                    if ($scope.locale['code'] == 'en-GB') {        
+                        $location.path(relocate ($location.path(), 'en'));
+                    } else {
+                        $location.path(relocate ($location.path(), 'fr'));
+                    } 
+                }
+            }, function() { 
+              $log.info('Modal dismissed at: ' + new Date());
+            });
+        };
+        
+        function relocate (url, pref_language) {
+            var split_url = url.split('/');
+            if (split_url[1]) {
+                split_url[1] = pref_language;
+                return split_url.join('/');
+            } else {
+                return '500_URL';
+            }
+            
+        }
+    }// end Contextcontroller function
+})();
+
+// Please note that $modalInstance represents a modal window (instance) dependency.
+// It is not the same as the $modal service used above.
+
+
+/**
+* search_controller controller
+* @namespace flynmeet.search_controller.controllers
+*/
+(function () {
+    'use strict';
+    
+    angular
+        .module('flynmeet.search_controller.controllers')
+        .controller('ContextBoxInstanceCtrl', ContextBoxInstanceCtrl)
+    
+    ContextBoxInstanceCtrl.$inject = ['$scope', '$modalInstance','ContextSetter', '$filter', '$cookies'];
+    /**
+    * @namespace ContextBoxInstanceCtrl
+    */
+    function ContextBoxInstanceCtrl ($scope, $modalInstance, ContextSetter, $filter, $cookies) {
+        
+        $scope.locales = ContextSetter.get_locales();
+        $scope.countries = ContextSetter.get_countries();
+        $scope.currencies = ContextSetter.get_currencies();
+        $scope.locale = {};
+        $scope.country = {};
+        $scope.currency = {};        
+        
+        if ($cookies.get('context.currency') &&  $cookies.get('context.locale') && $cookies.get('context.country')) {
+            var currency = $cookies.getObject('context.currency');
+            var locale = $cookies.getObject('context.locale');
+            var country = $cookies.getObject('context.country');
+            $scope.locale = filterObjByContaining  ($scope.locales, 'name', null , locale['name'])[0];
+            $scope.country = filterObjByContaining  ($scope.countries, 'Code', null , country['Code'])[0];
+            $scope.currency = filterObjByContaining  ($scope.currencies, 'Code', null , currency['Code'])[0];
+        } else {
+            $modalInstance.dismiss('Internal error, no user data saved in cookies');
+        }
+
+//        $scope.locale = filterObjByContaining  ($scope.locales, 'name', null , "English (United Kingdom)")[0];
+//        $scope.country = filterObjByContaining  ($scope.countries, 'Code', null , "SG")[0];
+//        $scope.currency = filterObjByContaining  ($scope.currencies, 'Code', null , "SGD")[0];
+        
+        $scope.ok = function() {
+            //save new data into cookies
+            $cookies.putObject('context.locale', $scope.locale);
+            $cookies.putObject('context.currency', $scope.currency);
+            $cookies.putObject('context.country', $scope.country);
+            $modalInstance.close(true);
+        };
+
+        $scope.cancel = function() {
+            $modalInstance.dismiss('cancel');
+        };
+        
+        
+        /**
+        * @name FilterObjByContaining
+        * @desc Look for a matching value of a given field inside an array of item
+        * and return the specific item
+        * @memberOf flynmeet. search_controller.controllers.FilterObjByContaining
+        */
+
+        function filterObjByContaining  (objtofilter, fieldfilter, subfieldfilter, value) {
+            if (objtofilter) {
+                return $filter('filter')(objtofilter, function(item){
+                    if (item[fieldfilter] == value) {
+                        return item;
+                    }
+                    if (subfieldfilter) {
+                        if (item[fieldfilter][subfieldfilter] == value) {
+                            return item;
+                        }
+                    }
+                })
+            }
+        }        
+    }
 })();

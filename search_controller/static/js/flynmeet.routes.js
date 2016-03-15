@@ -16,12 +16,20 @@
     * @desc Define valid application routes
     */
     function config($routeProvider) {
-        $routeProvider.when('/exploring/', {
-            templateUrl: '/static/templates/search.html',
+        $routeProvider.when('/en/exploring/', {
+            templateUrl: '/static/templates/search_en.html',
             controller: 'SearchController',
         })
-        .when('/buildingyourdreams/', {
-            templateUrl: '/static/templates/results.html',
+        .when('/en/trigger/', {
+            templateUrl: '/static/templates/results_en.html',
+            controller: 'ResController',
+        })
+        .when('/fr/exploring/', {
+            templateUrl: '/static/templates/search_fr.html',
+            controller: 'SearchController',
+        })
+        .when('/fr/trigger/', {
+            templateUrl: '/static/templates/results_fr.html',
             controller: 'ResController',
         })
         .otherwise({

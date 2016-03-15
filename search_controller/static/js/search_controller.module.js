@@ -6,7 +6,7 @@
   'use strict';
 
   angular
-    .module('flynmeet.search_controller', ['ngMaterial', 'ui.bootstrap',
+    .module('flynmeet.search_controller', ['ngMaterial',
         'flynmeet.search_controller.controllers',
         'flynmeet.search_controller.services'
     ]);

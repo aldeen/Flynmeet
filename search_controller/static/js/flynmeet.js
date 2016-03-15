@@ -3,11 +3,15 @@
 
     angular
         .module('flynmeet', [
+          'ui.bootstrap',
+          'ngAnimate',
           'flynmeet.routes',
           'flynmeet.search_controller',
-          'flynmeet.config', 'ngRoute',
+          'flynmeet.config', 
+          'ngRoute',
+          'ngCookies',  
         ])
-    .run(run);
+        .run(run);
 
     run.$inject = ['$http'];
 

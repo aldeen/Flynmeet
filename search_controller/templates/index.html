@@ -4,20 +4,18 @@
     <head>
         <base href="/">
     </head>
-    <nav class="navbar navbar-default" role="navigation">
+    <nav ng-controller="ContextController" class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">Flyn'meet Beta</a>
                 <img alt="Flynmeet" src="https://s3-ap-southeast-1.amazonaws.com/flynmeetsbucket/Images/Brand/logo3-60x50+copy.png">
             </div>
             <div>
-                <ul class="nav navbar-nav navbar-right">
+                <ul ng-cloak class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> SGD <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <!--<li><a href="#">Action</a></li>
-                            <li><a href="#">Separated link</a></li> -->
-                        </ul>
+                         {% verbatim %}
+                        <a href="#" class="dropdown-toggle" ng-click="open('sm')" role="button" aria-haspopup="true" aria-expanded="false"> {{currency.Code}} <span class="caret"></span></a>
+                         {% endverbatim %}
                     </li>
                 </ul>
             </div>
@@ -36,13 +34,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-cookies.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.2/ui-bootstrap.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.2/ui-bootstrap-tpls.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-touch.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+    <script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.13.4.js"></script>
     <script type="text/javascript" src="{% static 'js/flynmeet.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/flynmeet.config.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/flynmeet.routes.js' %}"></script>
@@ -53,7 +49,33 @@
     {% endblock %}
 
 
-
+    {% verbatim %}
+    <script type="text/ng-template" id="context_box.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Search settings</h3>
+        </div>
+        <div class="well">
+            <form name="ContextForm">
+                <div class="form-group">
+                    <label for="repeatSelect"> Language: </label>
+                    <select class="form-control" ng-model="locale" ng-options="locale_item.name for locale_item in locales"></select>
+                </div>
+                <div class="form-group">
+                    <label for="repeatSelect"> Country: </label>
+                    <select class="form-control" ng-model="country" ng-options="country_item.Name for country_item in countries"></select>
+                </div>
+                <div class="form-group">
+                    <label for="repeatSelect"> Currency: </label>
+                    <select class="form-control" ng-model="currency" ng-options="currency_item.Code for currency_item in currencies"></select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+ {% endverbatim %}
     
 </html>
 

@@ -6,20 +6,14 @@ Created on Feb 2, 2016
 Serializers class and funtions transforming the JSON ressources into instances
 '''
 from rest_framework import serializers
-from models import Search, Currency, Route
+from models import Search, Currency, Route, Country, Language
 
 class CurrencySerializer(serializers.ModelSerializer):
-    """"""
+    """ Serializer for Currencies"""
     class Meta:
         model = Currency
-        fields = ('code')
-    
-    def create(self, validated_data):
-        """
-        Create and return a new `Currency` instance, given the validated data.
-        """
-        return Currency.objects.create(**validated_data)
-
+        fields = ('Code', 'Symbol', 'SpaceBetweenAmountAndSymbol', 'SymbolOnLeft', 'DecimalSeparator',
+                  'ThousandsSeparator', 'RoundingCoefficient', 'DecimalDigits')
 
 
 class RouteSerializer(serializers.ModelSerializer):
@@ -58,4 +52,16 @@ class GlobalSearchSerializer(serializers.ModelSerializer):
         return search
 
 
-    
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ('code','name')
+
+
+class CountrySerializer (serializers.ModelSerializer):
+    """ Serializer for the all the countries at once """
+    Locale = LanguageSerializer(read_only=True)
+
+    class Meta:
+        model = Country
+        fields = ('Name', 'Code', 'Locale')

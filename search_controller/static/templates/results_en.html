@@ -1,0 +1,23 @@
+    <div ng-cloak class="row">
+        <div class= "col-md-6 col-md-offset-3" >
+                <h2 class="text-center">Start building your dreams  </h2>
+                <div ng-controller="ResController">
+                    <div class="well">
+                        <table class="table table-hover">
+                            <tr>
+                                <th>Destination</th>
+                                <th>Price</th>
+                            </tr>
+                            <tbody  ng-repeat="(key,value) in search_results | orderBy:'total_price'">
+                                <tr >
+                                    <td >{{(getObjFromRef(value['places'], "PlaceId", value['DestinationId'], 'CountryName')) }}</td>
+                                    <td ng-repeat="(index, quote) in value['dest_quotes']"> {{quote.MinPrice | currency:currency.Symbol }}</td>
+                                    <td >{{value['total_price']}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>    
+
+            </div>
+        </div>
+    </div>

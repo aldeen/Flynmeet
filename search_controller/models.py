@@ -11,7 +11,6 @@ from skyscanner import FlightsCache
 from function_tools import get_api_key
 import requests
 import json
-from django.db.models.fields.related import ManyToManyField
 KEY_API = get_api_key ()
 
 #class Place (models.Model):
@@ -21,18 +20,35 @@ KEY_API = get_api_key ()
 #    country_name = ManyToManyField(Country)
 #    city_id = 
 
+
 # Create your models here.
+
+
+class Language (models.Model):
+    """ Language of the website """
+    name = models.CharField('Site language', max_length=50)
+    code = models.CharField('Site language code', max_length=5, primary_key=True)
+
+
 class Currency (models.Model):
     """ Describe the different currencies that are going to be managed and their attributes"""
-    code = models.CharField('Currency code', max_length=3, primary_key=True)
-    symbol = models.CharField('Currency symbol', max_length=5)
-    exchange_rate = models.FloatField('Exchange rate') 
+    Code = models.CharField('Currency code', max_length=3, primary_key=True)
+    Symbol = models.CharField('Currency symbol', max_length=10)
+    SpaceBetweenAmountAndSymbol = models.BooleanField('Currency syntax')
+    SymbolOnLeft = models.BooleanField('Currency Symbol syntax')
+    DecimalSeparator = models.CharField('Currency Decimal Separator', max_length=1, null=True, blank=True)
+    ThousandsSeparator = models.CharField('Currency Decimal Separator', max_length=1, null=True, blank=True)
+    RoundingCoefficient = models.IntegerField('Currency Rounding Coefficient')
+    DecimalDigits = models.IntegerField('Currency Decimal Digit')
 
-#class Country (models.Model):
-#    """ Describe a country and its attribute """
-#    places = models.ManyToManyField(Place)
-#    currency = models.ForeignKey (Currency)
-    
+
+class Country (models.Model):
+    """ Describe a country and its attribute """
+    #Uppercase here is important as it MAPS skyscanner json key objects
+    Name = models.CharField('Site language', max_length=50)
+    Code = models.CharField('Country code', max_length=2)
+    Locale = models.ForeignKey(Language, null=True)
+
 
 class Route (models.Model):
     """ Describe a Route with all attributes """
@@ -96,5 +112,3 @@ class Search (models.Model):
             return r.json()
         else :
             return False
-
-            

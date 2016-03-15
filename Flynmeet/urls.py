@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from Flynmeet.views import SearchPage, IndexPage , ResultsPage, home
-from search_controller.views import SearchView, OriginEntriesView 
+from search_controller.views import SearchView, OriginEntriesView, UpdateDB_API, ContextInfo
 from rest_framework import routers
 
 
@@ -28,7 +28,10 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     #api end point
     url(r'^api/v1/CheapestDests/$', SearchView),
+    url(r'^api/v1/Update_db/$', UpdateDB_API),
     url(r'^api/v1/GetOriginEntries/$', OriginEntriesView),
+    url(r'^api/v1/GetContextInfo/$', ContextInfo),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url('^.*$', home, name='index'),
 ]
+# add something for which wrong API request are not accepted
