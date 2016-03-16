@@ -2,15 +2,15 @@
     'use strict';
 
     angular
-    .module('flynmeet.config')
-    .config(config);
+        .module('flynmeet.config')
+        .config(config);
 
-    config.$inject = ['$locationProvider','$interpolateProvider'];
+    config.$inject = ['$locationProvider', '$interpolateProvider'];
 
     /**
-    * @name config
-    * @desc Enable HTML5 routing and change way angular recognize variables
-    */
+     * @name config
+     * @desc Enable HTML5 routing and change way angular recognize variables
+     */
     function config($locationProvider, $interpolateProvider) {
         $locationProvider.html5Mode(true);
         $locationProvider.hashPrefix('!');
