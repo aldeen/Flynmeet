@@ -9,8 +9,8 @@
                     <table class="table">
                         <tr ng-repeat="quotes in range(route_count) track by $index" ng-include="'route_inputs.html'"></tr>
                     </table>
-                    <button type="button" ng-hide="route_count > 4" ng-click='addRoute()' class="btn btn-primary">Add destination</button>
-                    <button type="button" ng-show="route_count > 1" ng-click='delRoute()' class="btn btn-primary">Remove Destination</button>
+                    <button type="button" ng-hide="route_count > 4" ng-click='addRoute()' class="btn btn-primary">Add Departure</button>
+                    <button type="button" ng-show="route_count > 1" ng-click='delRoute()' class="btn btn-primary">Remove Departure</button>
                     <button type="submit" class="btn btn-primary">Search</button>
                 </div>
             </form>
