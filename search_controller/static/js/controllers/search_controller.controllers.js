@@ -61,6 +61,8 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
             startingDay: 1,
         };
 
+        var init_route_number = 2;
+
         $scope.search = search;
         $scope.addRoute = addRoute;
         $scope.delRoute = delRoute;
@@ -75,6 +77,7 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
         $scope.format = $scope.formats[2];
         $scope.altInputFormats = ['M!/d!/yyyy'];
         $scope.search_routes = [];
+        $scope.route_count = 0;
 
         $scope.open_departure_date_p = function (index) {
             $scope.popups_departure_date[index].state = true;
@@ -116,59 +119,58 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
         function initialize() {
             // In here we initialize the form for the first route/destination
             // If data in cookies, load last research data
-            console.log($cookies.getAll());
             if ($cookies.get('searches')) {
                 var searches = $cookies.getObject('searches');
                 var routes = searches[searches.length - 1]['routes'];
-                console.log(routes);
                 for (var i = 0; i < routes.length; i++) {
-                    $scope.search_routes[i] = {};
-                    console.log(routes[i].origin);
-                    $scope.search_routes[i]['origin'] = routes[i].origin;
                     // making sure the date is not in the past, if so date are today's date
                     var departure_date = new Date(routes[i].departure_date);
                     var return_date = new Date(routes[i].return_date);
-                    if (departure_date.getTime() >= (new Date().getTime())) {
-                        $scope.search_routes[i].departure_date = departure_date;
-                    } else {
-                        $scope.search_routes[i].departure_date = new Date();
+                    if (departure_date.getTime() < (new Date().getTime())) {
+                        departure_date = new Date();
                     }
-                    if (return_date.getTime() >= (new Date().getTime())) {
-                        $scope.search_routes[i].return_date = return_date;
-                    } else {
-                        $scope.search_routes[i].return_date = new Date();
+                    if (return_date.getTime() < (new Date().getTime())) {
+                        return_date = new Date();
                     }
-                    $scope.DateOptions[i] = {
-                        departure: departureDateOptions,
-                        return: returnDateOptions,
+                    var route_xformat = {
+                        origin: routes[i].origin,
+                        departure_date: departure_date,
+                        return_date: return_date,
                     }
-
-                    $scope.popups_departure_date[i] = {
-                        state: false,
-                    };
-                    $scope.popups_return_date[i] = {
-                        state: false,
-                    };
-                    $scope.route_count = i + 1;
+                    add_route_format(i, route_xformat);
                 }
             } // else start with a brand new input data
             else {
-                $scope.search_routes['0'] = route_format;
-                $scope.DateOptions['0'] = {
-                    departure: departureDateOptions,
-                    return: returnDateOptions,
+                for (var i = 0; i < init_route_number; i++) {
+                    add_route_format(i, route_format);
                 }
-                $scope.popups_departure_date['0'] = {
-                    state: false,
-                };
-                $scope.popups_return_date['0'] = {
-                    state: false,
-                };
-                $scope.route_count = 1;
             }
             //SearchFares.GetOrigins($scope.search_routes['0'].origin);
         }
 
+
+        /**
+         * @name add_route_input
+         * @desc add a new input for route into a form
+         * @route_format
+         * @memberOf flynmeet.search_controller.controllers.SearchController
+         */
+        function add_route_format(index, route_format) {
+            // default mode - today's date,
+            $scope.search_routes[index] = route_format;
+            $scope.DateOptions[index] = {
+                departure: departureDateOptions,
+                return: returnDateOptions,
+            }
+            $scope.popups_departure_date[index] = {
+                state: false,
+            };
+            $scope.popups_return_date[index] = {
+                state: false,
+            };
+            $scope.route_count++;
+            // cookies mode
+        }
         /**
          * @name save_search_info
          * @desc Save search informations in cookies
@@ -245,23 +247,7 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
          * @memberOf flynmeet.search_controller.controllers.SearchController
          */
         function addRoute() {
-            var route_format = {
-                origin: 'SG',
-                departure_date: new Date(),
-                return_date: new Date()
-            };
-            $scope.search_routes[$scope.route_count] = route_format;
-            $scope.DateOptions[$scope.route_count] = {
-                departure: departureDateOptions,
-                return: returnDateOptions,
-            }
-            $scope.popups_departure_date[$scope.route_count] = {
-                state: false,
-            };
-            $scope.popups_return_date[$scope.route_count] = {
-                state: false,
-            };
-            $scope.route_count++;
+            add_route_format($scope.route_count, route_format);
         }
 
         /**
