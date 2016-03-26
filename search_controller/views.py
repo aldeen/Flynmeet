@@ -44,22 +44,22 @@ def SearchView(request):
 
 @api_view(['POST'])
 def OriginEntriesView(request):
-     """
-#     Get all the entries that are available for origin  
-#     """
-#     if request.method == 'POST':
-#         serializer = SearchSerializer(data=request.data)
-#         if serializer.is_valid():
-#             try:
-#                 search = serializer.save()
-#                 results = search.get_location()
-#             except Exception as E:
-#                 print E
-#                 return Response('Internal Error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-#             return Response(results, status=status.HTTP_200_OK)
-#         else:
-#             print serializer.errors
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    """
+    Get all the entries that are available for origin
+    """
+    if request.method == 'POST':
+        serializer = GlobalSearchSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                search = serializer.save()
+                results = search.get_location()
+            except Exception as E:
+                print E
+                return Response('Internal Error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(results, status=status.HTTP_200_OK)
+        else:
+            print serializer.errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST','GET','PUT'])

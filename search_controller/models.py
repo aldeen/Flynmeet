@@ -56,17 +56,17 @@ class Route (models.Model):
     origin = models.CharField('Origin departure',  max_length=30)
 #    destination = models.ManyToManyField(Airport, blank=False, related_name='trip_destination')
     destination = models.CharField('Destination departure', max_length=30, blank=True, null=True)
-    departure_date = models.DateTimeField('Departure date')
-    return_date = models.DateTimeField('Return date')
+    departure_date = models.DateTimeField('Departure date', blank=True, null=True)
+    return_date = models.DateTimeField('Return date', blank=True, null=True)
      
     
 class Search (models.Model):
     """ Describe a search with all attributes """
+    api_search = FlightsCache(KEY_API)
     market = models.CharField('search market', max_length=10)
 #     currency = models.ManyToManyField(Currency)
     currency = models.CharField('search currency', max_length=10)
     locale = models.CharField('search locale', max_length=10)
-    api_search = FlightsCache(KEY_API)
     routes = models.ManyToManyField(Route)
     
     def get_search_results (self):
@@ -75,39 +75,34 @@ class Search (models.Model):
         # These below will have to be set according to the cookies, 
         data_res = {}
         i = 0
-        print self.routes.all();
         for route in self.routes.all():
-            print route 
-            route.destination = 'ANYWHERE'
-            r = self.api_search.get_cheapest_quotes(market=self.market, 
-                currency=self.currency,
-                locale=self.locale, 
-                originplace=route.origin,
-                destinationplace=route.destination,
-                outbounddate=route.departure_date.strftime("%Y-%m-%d"),
-                inbounddate=route.return_date.strftime("%Y-%m-%d"),
-            )
-            if r.status_code == requests.codes.ok:
-                data_res[i] = json.loads(r.text)
-                i+=1
-            else :
-                print 'The request to search to skyscanner failed'
-                return False
+            if (route.departure_date and route.return_date) :
+                route.destination = 'ANYWHERE'
+                r = self.api_search.get_cheapest_quotes(market=self.market,
+                    currency=self.currency,
+                    locale=self.locale,
+                    originplace=route.origin,
+                    destinationplace=route.destination,
+                    outbounddate=route.departure_date.strftime("%Y-%m-%d"),
+                    inbounddate=route.return_date.strftime("%Y-%m-%d"),
+                )
+                if r.status_code == requests.codes.ok:
+                    data_res[i] = json.loads(r.text)
+                    i+=1
+                else :
+                    print 'The request to search to skyscanner failed'
+                    return False
+            else:
+                print 'The request for searching quote cannot be proceeded with no departure/return dates set'
         return data_res
     
     def get_location (self):
         """ Returns results of the different location that can match the origin """
-        # These below will have to be set according to the cookies, 
-        # but so far, they are hardcoded for feature testing purpose
-        #TODO
-        self.market = 'GB'
-        self.currency ='SGD'
-        self.locale = 'GB-en'
-        r = self.api_search.location_autosuggest(market=self.market, 
+        for route in self.routes.all():
+            r = self.api_search.location_autosuggest(market=self.market,
             currency=self.currency,
             locale=self.locale, 
-            query=self.origin)
-            
+            query=route.origin)
         if r.status_code == requests.codes.ok:
             return r.json()
         else :

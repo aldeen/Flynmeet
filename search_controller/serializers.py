@@ -20,7 +20,7 @@ class RouteSerializer(serializers.ModelSerializer):
     """ Serializer for a route """
     class Meta:
         model = Route
-        fields = ('origin', 'departure_date', 'return_date')
+        fields = ('origin',)
 
 #     def create(self, validated_data):
 #         """

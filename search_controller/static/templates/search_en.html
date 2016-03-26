@@ -4,7 +4,7 @@
     </div>
     <div class="col-md-8 col-md-offset-2">
         <div class="well">
-            <form role="form" ng-submit="search()" ng-controller="SearchController">
+            <form role="form" ng-submit="search()" ng-controller="SearchController" name="searchForm">
                 <div class="table-responsive">
                     <table class="table">
                         <tr ng-repeat="quotes in range(route_count) track by $index" ng-include="'route_inputs.html'"></tr>
@@ -23,14 +23,20 @@
         {{$index+1}}
     </th>
 
-    <td style="width:32%">
+    <td style="width:40%">
         <div class="form-group">
             <label for="search__origin">Departure</label>
-            <input type="text" class="form-control" id="search__origin" ng-model="search_routes[$index].origin" uib-typeahead="place.name for place in places" />
+            <!--            <input type="text" class="form-control" id="search__origin" ng-model="search_routes[$index].origin" uib-typeahead="place.name for place in places" />-->
+            <input type="text" name={{autocomplete_origins[$index].input_name}} ng-model="search_routes[$index].origin" placeholder="Destination Departure" uib-typeahead="origin.display  for origin in getOrigins($viewValue, $index)" typeahead-loading="LoadingDeparturePlaces" typeahead-no-results="noResults" class="form-control">
+            <i ng-show="loadingDepartures" class="glyphicon glyphicon-refresh">Loading departures</i>
+            <div ng-show="noResults">
+                <i class="glyphicon glyphicon-remove"></i> No departure matching your entry.
+            </div>
+
         </div>
     </td>
 
-    <td style="width:32%">
+    <td style="width:30%">
         <div class="form-group">
             <label for="login__departure_date">Departure date</label>
             <p class="input-group">
@@ -41,7 +47,7 @@
             </p>
         </div>
     </td>
-    <td style="width:32%">
+    <td style="width:30%">
         <div class="form-group">
             <label for="login__return_date">Return date</label>
             <p class="input-group">

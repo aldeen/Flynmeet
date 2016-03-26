@@ -16,14 +16,18 @@
      * @returns {Factory}
      */
     function SearchFares($cookies, $http, $location) {
-        var search_results = {}
-            /**
-             * @name SearchFares
-             * @desc The Factory to be returned
-             */
+        var search_results = {};
+        var origins = {};
+
+        /**
+         * @name SearchFares
+         * @desc The Factory to be returned
+         */
         var SearchFares = {
             CheapestDests: CheapestDests,
             get_search_results: get_search_results,
+            retrieveOrigins: retrieveOrigins,
+            getOrigins: getOrigins,
             //           GetOrigins : GetOrigins,
             //cheapestCommonDests: cheapestCommonDests,
             //cheapestFares: cheapestFares,
@@ -42,6 +46,14 @@
             search_results = results;
         };
 
+        function setOrigins(origins_data) {
+            origins = origins_data;
+        }
+
+        function getOrigins() {
+            return origins;
+        }
+
         /**
          * @name CheapestDests
          * @desc Destination is not filled, try to find the cheapest destination for the given dates, from one origin place
@@ -56,7 +68,7 @@
             var valid_inputkeys = ['currency', 'market', 'routes', 'locale'];
             var return_flag = false
             angular.forEach(params, function (val, key) {
-                if (valid_inputkeys.indexOf(key) === -1) {
+                if (valid_inputkeys.indexOf(key) == -1) {
                     console.error('Input ' + key + ' parameters is not authorized');
                     return_flag = true;
                     return false;
@@ -94,47 +106,57 @@
 
 
         /**
-         * @name CheapestDests
-         * @desc Destination is not filled, try to find the cheapest destination for the given dates, from one origin place
-         * @param {string} origin The origin place of departure entered by the user
-         * @param {date} departure_date The date of the departure entered by the user
-         * @param {date} return_date The date of the return flight entered by the user
+         * @name retrieveOrigins
+         * @desc 
+         * @param
+         * @param
+         * @param
          * @returns {Promise}
          * @memberOf flynmeet.search_controller.services.SearchFares
          */
-        //        function GetOrigins(input_string) {
-        //            return $http.post('/api/v1/GetOriginEntries/', {
-        //                origin: input_string,
-        //            }).then(GetOriginsSuccessFn, GetOriginsErrorFn);
-        //
-        //            /**
-        //            * @name CheapestDestsSuccessFn
-        //            * @desc Display the results
-        //            */
-        //            function GetOriginsSuccessFn (data, status, headers, config) {
-        //            }
-        //
-        //            /**
-        //            * @name CheapestDestsErrorFn
-        //            * @desc Return to the search engine
-        //            */
-        //            function GetOriginsErrorFn(data, status, headers, config) {
-        //                console.error('Not possible to get the origins');
-        //            }
-        //        };
+        function retrieveOrigins(params) {
+            var valid_inputkeys = ['currency', 'market', 'routes', 'locale'];
+            var return_flag = false;
+            angular.forEach(params, function (val, key) {
+                if (valid_inputkeys.indexOf(key) == -1) {
+                    console.error('Input ' + key + ' parameters is not authorized');
+                    return_flag = true;
+                    return false;
+                }
+            })
+            return $http.post('/api/v1/GetOriginEntries/', params).then(retrieveOriginsSuccessFn, retrieveOriginsErrorFn);
+
+
+            /**
+             * @name retrieveOriginsSuccessFn
+             * @desc Display the results
+             */
+            function retrieveOriginsSuccessFn(data, status, headers, config) {
+                console.log(data.data.Places);
+                setOrigins(data.data.Places);
+            }
+
+            /**
+             * @name retrieveOriginsErrorFn
+             * @desc Return to the search engine
+             */
+            function retrieveOriginsErrorFn(data, status, headers, config) {
+                console.error('Not possible to get the origins');
+            }
+        };
     }
 
     angular
         .module('flynmeet.search_controller.services')
         .factory('ContextSetter', ContextSetter)
 
-    ContextSetter.$inject = ['$cookies', '$http', '$location', '$filter'];
+    ContextSetter.$inject = ['$cookies', '$http', '$location', '$filter', '$window'];
 
     /**
      * @namespace ContextSetter
      * @returns {Factory}
      */
-    function ContextSetter($cookies, $http, $location, $filter) {
+    function ContextSetter($cookies, $http, $location, $filter, $window) {
         var locales = {};
         var currencies = {};
         var countries = {};
@@ -206,32 +228,35 @@
          */
         function GetContext() {
             // if no cookies - then language based on URL
-            if (!$cookies.get('context.locale')) {
-                if (($location.path()).split('/')[1] && ($location.path()).split('/')[1] == 'fr') {
+            if (($location.path()).split('/')[1] && ($location.path()).split('/')[1] == 'fr') {
+                if (!$cookies.get('context.locale') || ($cookies.getObject('context.locale')['code'] == 'fr-FR')) {
                     return $http.post('/api/v1/GetContextInfo/', {
                             'locale': 'fr-FR'
                         })
                         .then(GetContextSuccessFn, GetContextErrorFn);
+                    // if cookies mais URL differente - relocation to proper URL
                 } else {
-                    return $http.post('/api/v1/GetContextInfo/', {
-                            'locale': 'en-GB'
-                        })
-                        .then(GetContextSuccessFn, GetContextErrorFn);
+                    window.location = 'en/exploring/';
                 }
-                // if cookies, languages based on cookies
-            } else {
+                // if url is not fr then we check if cookies
+            } else if (!$cookies.get('context.locale') || ($cookies.getObject('context.locale')['code'] == 'en-GB')) {
                 return $http.post('/api/v1/GetContextInfo/', {
-                        'locale': $cookies.getObject('context.locale')['code']
+                        'locale': 'en-GB'
                     })
                     .then(GetContextSuccessFn, GetContextErrorFn);
+                // if cookies but URL different, redirection to proper URL 
+            } else {
+                window.location = 'fr/exploring/';
             }
+
 
             /**
              * @name GetContextSuccessFn
              * @desc Display the results
              */
             function GetContextSuccessFn(data, status, headers, config) {
-                console.log(config)
+                console.log($cookies.getAll());
+
                 set_currencies(data.data['currencies']);
                 set_countries(data.data['countries']);
                 set_locales(data.data['locales']);
