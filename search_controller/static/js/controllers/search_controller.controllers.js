@@ -48,18 +48,15 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
         $scope.addRoute = addRoute;
         $scope.delRoute = delRoute;
         $scope.origin_places = {};
-        $scope.popups_departure_date = {};
-        $scope.popups_return_date = {};
-        $scope.departuresDateOptions = {};
-        $scope.returnsDateOptions = {};
+        $scope.departure_datepickers = {};
+        $scope.return_datepickers = {};
         $scope.search_routes = {};
         $scope.DateOptions = {};
         $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd/MM/yyyy', 'shortDate'];
         $scope.format = $scope.formats[2];
-        $scope.altInputFormats = ['M!/d!/yyyy'];
         $scope.search_routes = [];
         $scope.route_count = 0;
-        $scope.noResults = null;
+        $scope.noResults = false;
         $scope.autocomplete_origins = {};
 
 
@@ -75,21 +72,21 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
         }
 
         /**
-         * Make sure to adapt the possibilities of the return date according to the departure date
+         * Make sure to adapt the possibilities to pick up the return date according to the departure date
          **/
         $scope.update_return_date = function (index) {
             if ($scope.search_routes[index].departure_date) {
                 if (!$scope.search_routes[index].return_date) {
                     $scope.search_routes[index].return_date = $scope.search_routes[index].departure_date;
-                    $scope.DateOptions[index].return.minDate = new Date();
+                    $scope.return_datepickers[index].dateOptions.minDate = new Date();
                 } else if ($scope.search_routes[index].departure_date.getTime() > $scope.search_routes[index].return_date.getTime()) {
                     $scope.search_routes[index].return_date = $scope.search_routes[index].departure_date;
-                    $scope.DateOptions[index].return.minDate = $scope.search_routes[index].departure_date;
+                    $scope.return_datepickers[index].dateOptions.minDate = $scope.search_routes[index].departure_date;
                 } else {
-                    $scope.DateOptions[index].return.minDate = $scope.search_routes[index].departure_date;
+                    $scope.return_datepickers[index].dateOptions.minDate = $scope.search_routes[index].departure_date;
                 }
             } else {
-                $scope.DateOptions[index].return.minDate = new Date();
+                $scope.return_datepickers[index].dateOptions.minDate = new Date();
             }
         }
 
@@ -122,6 +119,9 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                         $scope.autocomplete_origins[index]['past_input'] = inputText;
                         $scope.autocomplete_origins[index].loading_departures = false;
                         console.log(results);
+                        if (results.length == 0) {
+                            $scope.autocomplete_origins[index].noResults = true;
+                        }
                         return results;
                     })
                     // else we use the old research results and filter it again.
@@ -136,9 +136,22 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                 $scope.autocomplete_origins[index]['past_input'] = inputText;
                 $scope.autocomplete_origins[index].loading_departures = false;
                 console.log(results);
+                if (results.length == 0) {
+                    $scope.autocomplete_origins[index].noResults = true;
+                }
                 return results;
             }
         };
+
+        $scope.checkResults = function (index) {
+            if ($scope.noResults == true && $scope.autocomplete_origins[index].noResults == true) {
+                return true;
+            } else {
+                return false;
+            }
+
+        };
+
 
         initialize();
 
@@ -197,28 +210,33 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                 error_message: "",
                 past_input: "",
                 past_results: "",
-                loading_departures: false
+                loading_departures: false,
+                noResults: false,
             };
             $scope.autocomplete_origins[index].input_name = 'typeahead_origin' + index.toString();
-            $scope.DateOptions[index] = {
-                departure: {
+            $scope.departure_datepickers[index] = {
+                dateOptions: {
                     formatYear: 'yy',
                     maxDate: new Date(2020, 5, 22),
                     minDate: new Date(),
-                    startingDay: 1,
+                    startingDay: 1
                 },
-                return: {
-                    formatYear: 'yy',
-                    maxDate: new Date(2020, 5, 22),
-                    minDate: new Date(),
-                    startingDay: 1,
+                popups: {
+                    state: false,
                 },
+                error_message: '',
             }
-            $scope.popups_departure_date[index] = {
-                state: false,
-            };
-            $scope.popups_return_date[index] = {
-                state: false,
+            $scope.return_datepickers[index] = {
+                dateOptions: {
+                    formatYear: 'yy',
+                    maxDate: new Date(2020, 5, 22),
+                    minDate: new Date(),
+                    startingDay: 1,
+                },
+                popups: {
+                    state: false,
+                },
+                error_message: '',
             };
             $scope.route_count++;
             // cookies mode
@@ -315,8 +333,9 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
         function delRoute() {
             $scope.route_count--;
             delete $scope.search_routes[$scope.route_count];
-            delete $scope.popups_departure_date[$scope.route_count];
-            delete $scope.popups_return_date[$scope.route_count];
+            delete $scope.autocomplete_origins[$scope.route_count];
+            delete $scope.departure_datepickers[$scope.route_count];
+            delete $scope.return_datepickers[$scope.route_count];
         }
 
     }
