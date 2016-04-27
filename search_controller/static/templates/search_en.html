@@ -27,8 +27,8 @@
         <div class="form-group">
             <label for="search__origin">Departure</label>
             <!--            <input type="text" class="form-control" id="search__origin" ng-model="search_routes[$index].origin" uib-typeahead="place.name for place in places" />-->
-            <input type="text" name={{autocomplete_origins[$index].input_name}} ng-model="search_routes[$index].origin" placeholder="Destination Departure" uib-typeahead="origin.display  for origin in getOrigins($viewValue, $index)" typeahead-loading="LoadingDeparturePlaces" typeahead-no-results="noResults" class="form-control" typeahead-min-length="3" typeahead-editable="false" required>
-            <i ng-show="loadingDepartures" class="glyphicon glyphicon-refresh">Loading departures</i>
+            <input type="text" name={{autocomplete_origins[$index].input_name}} ng-model="autocomplete_origins[$index].non_formatted_origin" placeholder="Destination Departure" uib-typeahead="$origin.display  for $origin in getOrigins($viewValue, $index) | filter:$viewValue" typeahead-no-results="noResults" class="form-control" typeahead-min-length="3" typeahead-editable="false" typeahead-input-formatter="format_ngModel($index, $model)" required>
+            <i ng-show="autocomplete_origins[$index].loading_departures" class="glyphicon glyphicon-refresh"> Loading departures</i>
             <div ng-show="checkResults($index)">
                 <i class="glyphicon glyphicon-remove"></i> No departure matching your entry.
             </div>
@@ -40,7 +40,7 @@
         <div class="form-group">
             <label for="login__departure_date">Departure date</label>
             <p class="input-group">
-                <input type="text" id="" class="form-control" uib-datepicker-popup="{{format}}" ng-model="search_routes[$index].departure_date" is-open="departure_datepickers[$index].popups.state" datepicker-options="departure_datepickers[$index].dateOptions" ng-required="true" close-text="Close" ng-change="update_return_date($index)" show-button-bar="false" required/>
+                <input type="text" id="" class="form-control" uib-datepicker-popup="{{format}}" ng-model="search_routes[$index].departure_date" is-open="departure_datepickers[$index].popups.state" datepicker-options="departure_datepickers[$index].dateOptions" ng-required="true" close-text="Close" ng-change="validate_date($index)" show-button-bar="false" required/>
                 <span class="input-group-btn">
             <button type="button" class="form-control" ng-click="open_departure_date_p($index)"><i class="glyphicon glyphicon-calendar"></i></button>
           </span>

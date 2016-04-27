@@ -54,6 +54,7 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
         $scope.DateOptions = {};
         $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd/MM/yyyy', 'shortDate'];
         $scope.format = $scope.formats[2];
+        $scope.pattern = "^(\d{2})\/(\d{2})\/(\d{4})$";
         $scope.search_routes = [];
         $scope.route_count = 0;
         $scope.noResults = false;
@@ -61,10 +62,10 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
 
 
         $scope.open_departure_date_p = function (index) {
-            $scope.popups_departure_date[index].state = true;
+            $scope.departure_datepickers[index].popups.state = true;
         }
         $scope.open_return_date_p = function (index) {
-            $scope.popups_return_date[index].state = true;
+            $scope.return_datepickers[index].popups.state = true;
         }
 
         $scope.range = function (number) {
@@ -89,6 +90,11 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                 $scope.return_datepickers[index].dateOptions.minDate = new Date();
             }
         }
+
+        $scope.validate_date = function (index) {
+            // $scope.update_return_date()
+        }
+
 
         $scope.getOrigins = function (inputText, index) {
             var search_params = {};
@@ -127,19 +133,19 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                     // else we use the old research results and filter it again.
             } else {
                 //filter sur past_results
-                var results = $filter('filter')($scope.autocomplete_origins[index]['past_results'], function (value) {
-                    console.log(value);
-                    if (angular.lowercase(value.PlaceName).indexOf(angular.lowercase(inputText)) != -1) {
-                        return true;
-                    }
-                });
+                //                var results = $filter('filter')($scope.autocomplete_origins[index]['past_results'], function (value) {
+                //                    console.log(value);
+                //                    if (angular.lowercase(value.PlaceName).indexOf(angular.lowercase(inputText)) != -1) {
+                //                        return true;
+                //                    }
+                //                });
                 $scope.autocomplete_origins[index]['past_input'] = inputText;
                 $scope.autocomplete_origins[index].loading_departures = false;
-                console.log(results);
-                if (results.length == 0) {
-                    $scope.autocomplete_origins[index].noResults = true;
-                }
-                return results;
+                //                if (results.length == 0) {
+                //                    $scope.autocomplete_origins[index].noResults = true;
+                //                }
+                return $scope.autocomplete_origins[index]['past_results'];
+                //                return results;
             }
         };
 
@@ -152,6 +158,17 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
 
         };
 
+        $scope.format_ngModel = function (index, model) {
+            // write a try/catch here
+            var results = $scope.autocomplete_origins[index]['past_results'];
+            for (var i = 0; i < results.length; i++) {
+                if (model === results[i].display) {
+                    $scope.search_routes[index].origin = results[i];
+                    return results[i].display;
+                }
+                return "Error";
+            }
+        }
 
         initialize();
 
@@ -178,7 +195,7 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                             return_date = new Date();
                         }
                         add_route_format(i, {
-                            origin: routes[i].origin,
+                            origin: routes[i].origin.display,
                             departure_date: departure_date,
                             return_date: return_date,
                         });
@@ -212,6 +229,7 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                 past_results: "",
                 loading_departures: false,
                 noResults: false,
+                non_formatted_origin: "",
             };
             $scope.autocomplete_origins[index].input_name = 'typeahead_origin' + index.toString();
             $scope.departure_datepickers[index] = {
@@ -225,6 +243,7 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                     state: false,
                 },
                 error_message: '',
+                pattern: $scope.pattern,
             }
             $scope.return_datepickers[index] = {
                 dateOptions: {
@@ -237,9 +256,9 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                     state: false,
                 },
                 error_message: '',
+                pattern: $scope.pattern,
             };
             $scope.route_count++;
-            // cookies mode
         }
         /**
          * @name save_search_info
@@ -281,27 +300,30 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                 search_params.market = $cookies.getObject('context.country')['Code'];
             }
             search_params.routes = [];
-            var validity_flag = true;
-            var log = [];
+            var routes = [];
+            //            var validity_flag = true;
             if ($scope.search_routes) {
                 for (var i = 0; i < Object.keys($scope.search_routes).length; i++) {
-                    validity_flag = true;
-                    angular.forEach($scope.search_routes[i], function (val, key) {
-                        if (!val || val == null || val == "") {
-                            validity_flag = validity_flag && false;
-                        } else if (key == 'return_date' || key == 'departure_date') {
-                            validity_flag = validity_flag && angular.isDate(val);
-                        }
-                    }, log);
-                    if (validity_flag === true) {
-                        search_params.routes[i] = $scope.search_routes[i];
-                    }
+                    routes[i] = $scope.search_routes[i];
+                    routes[i].origin = $scope.search_routes[i].origin.PlaceId.replace('-sky', '')
+                        //                    validity_flag = true;
+                        //                    angular.forEach($scope.search_routes[i], function (val, key) {
+                        //                        if (!val || val == null || val == "") {
+                        //                            validity_flag = validity_flag && false;
+                        //                        } else if (key == 'return_date' || key == 'departure_date') {
+                        //                            validity_flag = validity_flag && angular.isDate(val);
+                        //                        }
+                        //                    }, log);
+                        //                    if (validity_flag === true) {
+                        //                        search_params.routes[i] = $scope.search_routes[i];
+                        //                    }
                 }
                 save_search_info(search_params.routes, {
                     currency: search_params.currency,
                     locale: search_params.locale,
                     market: search_params.market,
                 });
+                search_params.routes = routes;
                 $scope.search_res = SearchFares.CheapestDests(search_params);
             } else {
                 $scope.errmsg = 'All fields need to filled';
