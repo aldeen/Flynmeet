@@ -44,10 +44,11 @@ logout
 register
 
 ## Requirements ##
-* Python 2.7
-* Django 1.9
-* Django Rest Framework
-* Skyscanner python lib
+* Django==1.9.4
+* djangorestframework==3.3.3
+* MySQL-python==1.2.5
+* requests==2.9.1
+* skyscanner==1.1.1
 
 So far style is managed by using bootstrap css, file called on the html using a link, but that will change in the future. We might download and insert the bootstrap.css directly into the project later and make out own change if the License allows it
 Angularjs is also directly called inside the html, but will be later included in the project. At the stage, it's not really necessary
