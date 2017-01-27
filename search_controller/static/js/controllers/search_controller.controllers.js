@@ -110,8 +110,23 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
         $scope.return_datepickers = {};
         $scope.search_routes = {};
         $scope.DateOptions = {};
-        $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd/MM/yyyy', 'shortDate'];
-        $scope.format = $scope.formats[2];
+        $scope.date_formatting_options = [
+            {
+                format: 'dd-MMMM-yyyy',
+                pattern: '^(\d{2)-(\d{4})-(\d{4})$',
+            }, {
+                format: 'yyyy/MM/dd',
+                pattern: '^(\d{4})\/(\d{2})\/(\d{2})$',
+            }, {
+                format: 'dd/MM/yyyy',
+                pattern: '^(\d{2})\/(\d{2})\/(\d{4})$',
+            }, {
+                format: 'shortDate',
+                pattern: '/^\d{1,2}\/\d{1,2}\/((\d{2})|(\d{4}))$/',
+            }
+        ];
+        $scope.date_format = $scope.date_formatting_options[2]['format'];
+        $scope.date_pattern = $scope.date_formatting_options[2]['pattern'];
         $scope.pattern = "^(\d{2})\/(\d{2})\/(\d{4})$";
         $scope.search_routes = [];
         $scope.route_count = 0;
@@ -283,7 +298,7 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                         var departure_date = new Date(routes[i].departure_date);
                         var return_date = new Date(routes[i].return_date);
                         if (departure_date.getTime() < (new Date().getTime())) {
-                            departure_date = new Date();
+                            departure_date = new Date() + 1;
                         }
                         if (return_date.getTime() < (new Date().getTime())) {
                             return_date = new Date();
@@ -342,6 +357,7 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                 },
                 error_message: '',
                 pattern: $scope.pattern,
+                name: 'departure_' + index.toString(),
             }
             $scope.return_datepickers[index] = {
                 dateOptions: {
@@ -355,6 +371,7 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
                 },
                 error_message: '',
                 pattern: $scope.pattern,
+                name: 'return_' + index.toString(),
             };
             $scope.route_count++;
         }

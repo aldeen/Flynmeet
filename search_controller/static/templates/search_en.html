@@ -40,22 +40,33 @@
         <div class="form-group">
             <label for="login__departure_date">Departure date</label>
             <p class="input-group">
-                <input type="text" id="" class="form-control" uib-datepicker-popup="{{format}}" ng-model="search_routes[$index].departure_date" is-open="departure_datepickers[$index].popups.state" datepicker-options="departure_datepickers[$index].dateOptions" ng-required="true" close-text="Close" ng-change="validate_date($index)" show-button-bar="false" required/>
-                <span class="input-group-btn">
-            <button type="button" class="form-control" ng-click="open_departure_date_p($index)"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
+                <input sc-validDate type="text" id="" class="form-control" uib-datepicker-popup="{{date_format}}" ng-model="search_routes[$index].departure_date" is-open="departure_datepickers[$index].popups.state" datepicker-options="departure_datepickers[$index].dateOptions" ng-required="true" close-text="Close" show-button-bar="false" name="{{departure_datepickers[$index].name}}" required/>
+                <span class="input-group-btn">  
+                    <button type="button" class="form-control" ng-click="open_departure_date_p($index)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
             </p>
+            <span ng-hide="searchForm['{{departure_datepickers[$index].name}}'].$valid">Date is invalid</span>
+            <!--
+            <span ng-hide="!searchForm['{{departure_datepickers[$index].name}}'].$validDate">Date is too far in time, please choose a closest date</span>x
+            <span ng-hide="!searchForm['{{departure_datepickers[$index].name}}'].$validDateNotInPast">Date is in the past</span>
+-->
         </div>
     </td>
     <td style="width:30%">
         <div class="form-group">
             <label for="login__return_date">Return date</label>
             <p class="input-group">
-                <input type="text" id="" class="form-control" uib-datepicker-popup="{{format}}" ng-model="search_routes[$index].return_date" is-open="return_datepickers[$index].popups.state" datepicker-options="return_datepickers[$index].dateOptions" ng-required="true" close-text="Close" show-button-bar="false" required/>
+                <input sc-validDate type="text" id="" class="form-control" uib-datepicker-popup="{{date_format}}" ng-model="search_routes[$index].return_date" is-open="return_datepickers[$index].popups.state" datepicker-options="return_datepickers[$index].dateOptions" ng-required="true" close-text="Close" show-button-bar="false" name="{{return_datepickers[$index].name}}" required/>
                 <span class="input-group-btn">
-            <button type="button" class="form-control" ng-click="open_return_date_p($index)"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
+                    <button type="button" class="form-control" ng-click="open_return_date_p($index)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
             </p>
+            <span ng-hide="searchForm['{{return_datepickers[$index].name}}'].$valid">Date is invalid</span>
+            <!--
+            <span ng-hide="!searchForm['{{return_datepickers[$index].name}}'].$validDateFormat">Date Format is not correct</span>
+<span ng-hide="!searchForm['{{return_datepickers[$index].name}}'].$validDate">Date is too far in time, please choose a closest date</span>
+<span ng-hide="!searchForm['{{return_datepickers[$index].name}}'].$validDateNotInPast">Date is in the past</span>
+-->
         </div>
     </td>
 </script>

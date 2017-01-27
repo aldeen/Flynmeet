@@ -1,3 +1,5 @@
+//#TODO - Rajouter une fonction qui gere les formats de date en fonction de la langue et du Pays (locale). Essayer de rendre le service Contextsetter tel un service. Get and set context et ne pas utiliser les cookies directement dans le controller. Init, get_all, set_all, get_x, set_x, get_y, set_y
+
 /**
  * @ngdoc service
  * @name flynmeet.search_controller.services:searchFares
@@ -423,6 +425,7 @@
                 // #TODO Gestion d 'erreur
                 console.error('Not possible to get the context');
             }
+
         };
     }
 })();
