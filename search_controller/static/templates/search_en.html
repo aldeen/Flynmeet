@@ -12,6 +12,9 @@
                     <button type="button" ng-hide="route_count > 4" ng-click='addRoute()' class="btn btn-primary">Add Departure</button>
                     <button type="button" ng-show="route_count > 1" ng-click='delRoute()' class="btn btn-primary">Remove Departure</button>
                     <button type="submit" class="btn btn-primary">Search</button>
+                    <div ng-hide="searchForm.$valid || searchForm.$pristine" class="alert alert-warning">
+                        <strong>Warning!</strong> Make sure your input data are correct before validating.
+                    </div>
                 </div>
             </form>
         </div>
@@ -45,11 +48,8 @@
                     <button type="button" class="form-control" ng-click="open_departure_date_p($index)"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
             </p>
-            <span ng-hide="searchForm['{{departure_datepickers[$index].name}}'].$valid">Date is invalid</span>
-            <!--
-            <span ng-hide="!searchForm['{{departure_datepickers[$index].name}}'].$validDate">Date is too far in time, please choose a closest date</span>x
-            <span ng-hide="!searchForm['{{departure_datepickers[$index].name}}'].$validDateNotInPast">Date is in the past</span>
--->
+            <span class="input_error" ng-show="searchForm['{{departure_datepickers[$index].name}}'].$error.date">Date is invalid</span>
+            <span class="input_error" ng-show="searchForm['{{departure_datepickers[$index].name}}'].$error.nodate">Please enter a date</span>
         </div>
     </td>
     <td style="width:30%">
@@ -61,7 +61,7 @@
                     <button type="button" class="form-control" ng-click="open_return_date_p($index)"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
             </p>
-            <span ng-hide="searchForm['{{return_datepickers[$index].name}}'].$valid">Date is invalid</span>
+            <span ng-show="searchForm['{{return_datepickers[$index].name}}'].$error.date">Date is invalid</span>
             <!--
             <span ng-hide="!searchForm['{{return_datepickers[$index].name}}'].$validDateFormat">Date Format is not correct</span>
 <span ng-hide="!searchForm['{{return_datepickers[$index].name}}'].$validDate">Date is too far in time, please choose a closest date</span>

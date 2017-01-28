@@ -413,41 +413,45 @@ For object quote, see directly skyscanner. Each quote contains all the quotes + 
          * Call the service that will get the cheapest destination at the given dates
          */
         function search() {
-            var search_params = {};
-            // to replace with the client currency and locale
-            if ($cookies.get('context.currency') && $cookies.get('context.locale') && $cookies.get('context.country')) {
-                search_params.currency = $cookies.getObject('context.currency')['Code'];
-                search_params.locale = $cookies.getObject('context.locale')['code'];
-                search_params.market = $cookies.getObject('context.country')['Code'];
-            }
-            search_params.routes = [];
-            var routes = [];
-            //            var validity_flag = true;
-            if ($scope.search_routes) {
-                for (var i = 0; i < Object.keys($scope.search_routes).length; i++) {
-                    routes[i] = $scope.search_routes[i];
-                    routes[i].origin = $scope.search_routes[i].origin.PlaceId.replace('-sky', '')
-                        //                    validity_flag = true;
-                        //                    angular.forEach($scope.search_routes[i], function (val, key) {
-                        //                        if (!val || val == null || val == "") {
-                        //                            validity_flag = validity_flag && false;
-                        //                        } else if (key == 'return_date' || key == 'departure_date') {
-                        //                            validity_flag = validity_flag && angular.isDate(val);
-                        //                        }
-                        //                    }, log);
-                        //                    if (validity_flag === true) {
-                        //                        search_params.routes[i] = $scope.search_routes[i];
-                        //                    }
+            if ($scope.searchForm.$valid) {
+                var search_params = {};
+                // to replace with the client currency and locale
+                if ($cookies.get('context.currency') && $cookies.get('context.locale') && $cookies.get('context.country')) {
+                    search_params.currency = $cookies.getObject('context.currency')['Code'];
+                    search_params.locale = $cookies.getObject('context.locale')['code'];
+                    search_params.market = $cookies.getObject('context.country')['Code'];
                 }
-                save_search_info(search_params.routes, {
-                    currency: search_params.currency,
-                    locale: search_params.locale,
-                    market: search_params.market,
-                });
-                search_params.routes = routes;
-                $scope.search_res = searchFares.CheapestDests(search_params);
+                search_params.routes = [];
+                var routes = [];
+                //            var validity_flag = true;
+                if ($scope.search_routes) {
+                    for (var i = 0; i < Object.keys($scope.search_routes).length; i++) {
+                        routes[i] = $scope.search_routes[i];
+                        routes[i].origin = $scope.search_routes[i].origin.PlaceId.replace('-sky', '')
+                            //                    validity_flag = true;
+                            //                    angular.forEach($scope.search_routes[i], function (val, key) {
+                            //                        if (!val || val == null || val == "") {
+                            //                            validity_flag = validity_flag && false;
+                            //                        } else if (key == 'return_date' || key == 'departure_date') {
+                            //                            validity_flag = validity_flag && angular.isDate(val);
+                            //                        }
+                            //                    }, log);
+                            //                    if (validity_flag === true) {
+                            //                        search_params.routes[i] = $scope.search_routes[i];
+                            //                    }
+                    }
+                    save_search_info(search_params.routes, {
+                        currency: search_params.currency,
+                        locale: search_params.locale,
+                        market: search_params.market,
+                    });
+                    search_params.routes = routes;
+                    $scope.search_res = searchFares.CheapestDests(search_params);
+                } else {
+                    $scope.errmsg = 'All fields need to filled';
+                }
             } else {
-                $scope.errmsg = 'All fields need to filled';
+                $scope.searchForm.$error.$invalidForm = true;
             }
         }
 

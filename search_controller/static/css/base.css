@@ -1,7 +1,21 @@
-#login__return_date{
-    height:inherit;
+#login__return_date {
+    height: inherit;
 }
-#login__departure_date{
-    height:inherit;
+
+#login__departure_date {
+    height: inherit;
 }
-#datepicker > span:hover{cursor: pointer;}
+
+#datepicker > span:hover {
+    cursor: pointer;
+}
+
+input.ng-invalid.ng-dirty {
+    background-color: #fcf8e3;
+    border-color: #337ab7;
+}
+
+span.input_error {
+    color: maroon;
+    font-size: small;
+}

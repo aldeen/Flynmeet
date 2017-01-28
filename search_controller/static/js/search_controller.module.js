@@ -7,6 +7,7 @@
 
     angular
         .module('flynmeet.search_controller', ['ngMaterial',
+        'ngMessages',
         'flynmeet.search_controller.controllers',
         'flynmeet.search_controller.services',
         'flynmeet.search_controller.directives',
